@@ -2,7 +2,8 @@
 import discord, asyncio, random, pickle, os
 
 client = discord.Client()
-CHANNEL = '348154337777680385'
+CHANNEL = '348154337777680385'         # Channel ID can be found by setting discord settings, Appearnce >> Developer Mode
+                                       # then right clicking a channel and selecting Copy ID
 
 @client.event
 async def on_ready():
@@ -28,14 +29,12 @@ def dicerolling(qty, sides):
     finalresult = "" + str(rolls) + " total: " + str(totalRoll)
     return rolls
 
-## test of just rolling a d6
+
 @client.event
 async def on_message(message):
     if message.content.startswith('!d6'):
         randd6 = random.randint(1,6)
-        # Channel ID can be found by setting discord settings, Appearnce >> Developer Mode
-        # then right clicking a channel and selecting Copy ID
-        await client.send_message(client.get_channel('348154337777680385'), randd6)
+        await client.send_message(client.get_channel(CHANNEL), randd6)
 
     elif message.content.startswith('!roll'):
         context = message.content
@@ -45,10 +44,20 @@ async def on_message(message):
         if len(split) == 4:
             argument = split[3]
 
+        ## Checks to see if an argument was appended
         if len(split) == 4:
-            if 'tar' in argument:
-                await client.send_message(client.get_channel(CHANNEL), 'Testing target number stuff') # TODO
 
+            # Will compare against a target number to count successes
+            if 'tar' in argument:
+                successes = 0
+                tar = argument.split('=')
+                rolls = dicerolling(qty,sides)
+                for i in rolls[:]:
+                    if i >= int(tar[1]):
+                        successes += 1
+                await client.send_message(client.get_channel(CHANNEL), '' + str(rolls) + ' which resulted in ' + str(successes) + ' successes') 
+
+            # Will roll a set of dice and drop the lowest result, eg D&D stat generation 4d6 drop lowest
             if 'droplow' in argument:
                 rolls = dicerolling(qty,sides)
                 rolls = sorted(rolls)
