@@ -2,6 +2,7 @@
 import discord, asyncio, random, pickle, os
 
 client = discord.Client()
+CHANNEL = '348154337777680385'
 
 @client.event
 async def on_ready():
@@ -9,6 +10,23 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
+
+def dicerolling(qty, sides):
+    rolls = []
+    genrandoms = []
+    start = 1
+    totalRoll = 0
+
+    for y in range(sides):
+            genrandoms.append(start)
+            start +=1
+    for i in range(qty):
+            random.shuffle(genrandoms)
+            rolls.append(genrandoms[random.randint(0,sides-1)])
+            random.shuffle(rolls) # makes it appear more random for large amounts of dice rolls
+            
+    finalresult = "" + str(rolls) + " total: " + str(totalRoll)
+    return rolls
 
 ## test of just rolling a d6
 @client.event
@@ -26,34 +44,29 @@ async def on_message(message):
         sides = int(split[2])
         if len(split) == 4:
             argument = split[3]
-        rolls = []
-        genrandoms = []
-        start = 1
-        totalRoll = 0
-        for y in range(sides):
-            genrandoms.append(start)
-            start +=1
-        for i in range(qty):
-            random.shuffle(genrandoms)
-            rolls.append(genrandoms[random.randint(0,sides-1)])
-            random.shuffle(rolls) # makes it appear more random for large amounts of dice rolls
-        for i in rolls[:]:
-            totalRoll += i
 
         if len(split) == 4:
             if 'tar' in argument:
-                await client.send_message(client.get_channel('348154337777680385'), 'Testing target number stuff') # TODO
+                await client.send_message(client.get_channel(CHANNEL), 'Testing target number stuff') # TODO
 
             if 'droplow' in argument:
+                rolls = dicerolling(qty,sides)
                 rolls = sorted(rolls)
+                totalRoll = 0
+                for i in rolls[:]:
+                    totalRoll += i
                 totalRoll -= rolls[0]
                 
-                finalresult = "" + str(rolls) + " total with " + str(rolls[0]) + " dropped: " + str(totalRoll)
-                await client.send_message(client.get_channel('348154337777680385'), finalresult)
+                finalResult = "" + str(rolls) + " total with " + str(rolls[0]) + " dropped: " + str(totalRoll)
+                await client.send_message(client.get_channel(CHANNEL), finalResult)
 
-        else:       
-                finalresult = "" + str(rolls) + " total: " + str(totalRoll)
-                await client.send_message(client.get_channel('348154337777680385'), finalresult)
+        else:
+            rolls = dicerolling(qty,sides)
+            totalRoll = 0
+            for i in rolls[:]:
+                    totalRoll += i
+            finalResult = "" + str(rolls) + " total: " + str(totalRoll)
+            await client.send_message(client.get_channel(CHANNEL), finalResult)
 
     elif message.content.startswith('!quit'):
         quit()
@@ -62,21 +75,3 @@ async def on_message(message):
 with open('token.key','r') as f:
     t = f.read()
     client.run(t)
-
-def dicerolling(qty, sides):
-    rolls = []
-    genrandoms = []
-    start = 1
-    totalRoll = 0
-
-    for y in range(sides):
-            genrandoms.append(start)
-            start +=1
-        for i in range(qty):
-            random.shuffle(genrandoms)
-            rolls.append(genrandoms[random.randint(0,sides-1)])
-            random.shuffle(rolls) # makes it appear more random for large amounts of dice rolls
-        for i in rolls[:]:
-            totalRoll += i
-    finalresult = "" + str(rolls) + " total: " + str(totalRoll)
-    return finalresult
