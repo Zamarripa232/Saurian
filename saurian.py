@@ -20,6 +20,28 @@ async def on_message(message):
         randd6 = random.randint(1,6)
         await client.send_message(client.get_channel(CHANNEL), randd6)
 
+    # Fudge rolls
+    if message.content.startswith('!roll dF'):
+        context = message.content
+        response = ''
+        nummod = 0
+        if context[8]=="-":
+            mod = context.split('-')
+            nummod = -1 * int(mod[1])
+        elif context[8]=="+":
+            mod = context.split('+')
+            nummod = int(mod[1])
+        roll = fudgeRoll()
+        result = ladderResult(roll, nummod)
+        response = ('You rolled {} with {}.\nIncluding the modifier of {} your result is {}, {}!'
+                    .format(str(roll[0]),
+                    str(roll[1]),
+                    str(nummod),
+                    str(result[0]),
+                    str(result[1])
+                    ))
+        await client.send_message(client.get_channel(CHANNEL), response)
+
     elif message.content.startswith('!roll'):
         context = message.content
         split = context.split(' ') # splits at space, e.g. ['!roll', '16', '100']
@@ -52,27 +74,6 @@ async def on_message(message):
                 
                 finalResult = "" + str(rolls)[1:-1] + " total with " + str(rolls[0]) + " dropped: " + str(totalRoll)
                 await client.send_message(client.get_channel(CHANNEL), finalResult)
-
-            # Fudge rolls
-            if 'dF' in argument:
-                response = ''
-                nummod = 0
-                if argument[2]=="-":
-                    mod = argument.split('-')
-                    nummod = -1 * int(mod[1])
-                elif argument[2]=="+":
-                    mod = argument.split('+')
-                    nummod = int(mod[1])
-                roll = fudgeRoll()
-                result = ladderResult(roll, nummod)
-                response = ('You rolled {} with {}.\nIncluding the modifier of {} your result is {}, {}!'
-                            .format(str(roll[0]),
-                            str(roll[1]),
-                            str(nummod),
-                            str(result[0]),
-                            str(result[1])
-                            ))
-                await client.send_message(client.get_channel(CHANNEL), response)
 
         else:
             rolls = dicerolling(qty,sides)
