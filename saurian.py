@@ -18,6 +18,9 @@ async def on_message(message):
         randd6 = random.randint(1,6)
         await client.send_message(message.channel, randd6)
 
+    if message.content.startswith('!howtotakeovertheworld'):
+        await client.send_message(message.channel, 'Floyd can totally help you out with that after large bit donations!')
+
     # Fudge rolls
     if message.content.startswith('!roll dF'):
         context = message.content
