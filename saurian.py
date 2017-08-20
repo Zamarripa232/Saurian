@@ -3,8 +3,6 @@ import discord, asyncio, random, pickle, os, lib
 from lib.dicerolling import *
 
 client = discord.Client()
-CHANNEL = '348154337777680385'         # Channel ID can be found by setting discord settings, Appearnce >> Developer Mode
-                                       # then right clicking a channel and selecting Copy ID
 
 @client.event
 async def on_ready():
@@ -18,7 +16,7 @@ async def on_ready():
 async def on_message(message):
     if message.content.startswith('!d6'):
         randd6 = random.randint(1,6)
-        await client.send_message(client.get_channel(CHANNEL), randd6)
+        await client.send_message(message.channel, randd6)
 
     # Fudge rolls
     if message.content.startswith('!roll dF'):
@@ -40,7 +38,7 @@ async def on_message(message):
                     str(result[0]),
                     str(result[1])
                     ))
-        await client.send_message(client.get_channel(CHANNEL), response)
+        await client.send_message(message.channel, response)
 
     elif message.content.startswith('!roll'):
         context = message.content
@@ -61,7 +59,7 @@ async def on_message(message):
                 for i in rolls[:]:
                     if i >= int(tar[1]):
                         successes += 1
-                await client.send_message(client.get_channel(CHANNEL), '' + str(rolls)[1:-1] + ' which resulted in ' + str(successes) + ' successes') 
+                await client.send_message(message.channel, '' + str(rolls)[1:-1] + ' which resulted in ' + str(successes) + ' successes') 
 
             # Will roll a set of dice and drop the lowest result, eg D&D stat generation 4d6 drop lowest
             if 'droplow' in argument:
@@ -73,7 +71,7 @@ async def on_message(message):
                 totalRoll -= rolls[0]
                 
                 finalResult = "" + str(rolls)[1:-1] + " total with " + str(rolls[0]) + " dropped: " + str(totalRoll)
-                await client.send_message(client.get_channel(CHANNEL), finalResult)
+                await client.send_message(message.channel, finalResult)
 
         else:
             rolls = dicerolling(qty,sides)
@@ -81,7 +79,7 @@ async def on_message(message):
             for i in rolls[:]:
                     totalRoll += i
             finalResult = "" + str(rolls)[1:-1] + " total: " + str(totalRoll)
-            await client.send_message(client.get_channel(CHANNEL), finalResult)
+            await client.send_message(message.channel, finalResult)
 
     elif message.content.startswith('!quit'):
         quit()
